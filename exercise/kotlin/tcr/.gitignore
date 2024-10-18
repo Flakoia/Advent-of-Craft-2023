@@ -1,9 +1,0 @@
-# Below files and directories are automatically created
-# by tcr.sh and do not need to be committed to this repository
-
-bin/README.md
-doc/**
-download/**
-LICENSE.md
-README.md
-bin/**
