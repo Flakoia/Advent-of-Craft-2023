@@ -6,6 +6,7 @@ import ci.dependencies.Logger;
 import ci.dependencies.Project;
 
 public class Pipeline {
+    public static final String STATUS_SUCCESS = "success";
     private final Config config;
     private final Emailer emailer;
     private final Logger log;
@@ -17,47 +18,51 @@ public class Pipeline {
     }
 
     public void run(Project project) {
-        boolean testsPassed;
-        boolean deploySuccessful;
-
-        if (project.hasTests()) {
-            if ("success".equals(project.runTests())) {
-                log.info("Tests passed");
-                testsPassed = true;
-            } else {
-                log.error("Tests failed");
-                testsPassed = false;
-            }
-        } else {
-            log.info("No tests");
-            testsPassed = true;
+        if (!hasTestsPassed(project)) {
+            sendEmail("Tests failed", log, config);
+            return;
         }
 
-        if (testsPassed) {
-            if ("success".equals(project.deploy())) {
-                log.info("Deployment successful");
-                deploySuccessful = true;
-            } else {
-                log.error("Deployment failed");
-                deploySuccessful = false;
-            }
-        } else {
-            deploySuccessful = false;
+        if (!hasDeploymentSuccessful(project)) {
+            sendEmail("Deployment failed", log, config);
+            return;
         }
 
-        if (config.sendEmailSummary()) {
-            log.info("Sending email");
-            if (testsPassed) {
-                if (deploySuccessful) {
-                    emailer.send("Deployment completed successfully");
-                } else {
-                    emailer.send("Deployment failed");
-                }
-            } else {
-                emailer.send("Tests failed");
-            }
-        } else {
+        sendEmail("Deployment completed successfully", log, config);
+    }
+
+    private void sendEmail(String message, Logger log, Config config) {
+        if (!config.sendEmailSummary()) {
             log.info("Email disabled");
+            return;
+        }
+
+        log.info("Sending email");
+        emailer.send(message);
+    }
+
+    private boolean hasDeploymentSuccessful(Project project) {
+        if (STATUS_SUCCESS.equals(project.deploy())) {
+            log.info("Deployment successful");
+            return true;
+        } else {
+            log.error("Deployment failed");
+            return false;
+        }
+    }
+
+    private boolean hasTestsPassed(Project project) {
+        if (!project.hasTests()) {
+            log.info("No tests");
+            return true;
+        }
+
+        if (STATUS_SUCCESS.equals(project.runTests())) {
+            log.info("Tests passed");
+            return true;
+        } else {
+            log.error("Tests failed");
+            return false;
         }
     }
 }
