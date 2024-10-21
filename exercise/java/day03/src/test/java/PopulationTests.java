@@ -5,15 +5,10 @@ import people.Pet;
 import people.PetType;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static java.lang.Integer.MAX_VALUE;
-import static java.lang.String.format;
-import static java.lang.System.lineSeparator;
+import static java.util.Comparator.comparingInt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class PopulationTests {
@@ -44,9 +39,21 @@ class PopulationTests {
 
     @Test
     void whoOwnsTheYoungestPet() {
-        var filtered = population.stream().min(Comparator.comparingInt(person -> person.pets().stream().mapToInt(Pet::age).min().orElse(Integer.MAX_VALUE))).orElse(null);
+        var filtered = population
+                .stream()
+                .min(comparingInt(PopulationTests::youngestPetAgeOfThePerson))
+                .orElse(null);
 
         assert filtered != null;
-        assertThat(filtered.firstName()).isEqualTo("Lois");
+        assertThat(filtered.firstName())
+                .isEqualTo("Lois");
+    }
+
+    private static int youngestPetAgeOfThePerson(Person person) {
+        return person.pets()
+                .stream()
+                .mapToInt(Pet::age)
+                .min()
+                .orElse(MAX_VALUE);
     }
 }

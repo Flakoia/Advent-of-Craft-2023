@@ -6,8 +6,6 @@ import people.Person;
 import people.Pet;
 import people.PetType;
 
-import java.util.Arrays;
-
 import static java.lang.Integer.MAX_VALUE;
 import static org.assertj.core.api.Assertions.assertThat;
 
