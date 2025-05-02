@@ -8,7 +8,7 @@ public record Food(LocalDate expirationDate,
                    Boolean approvedForConsumption,
                    UUID inspectorId) {
     public boolean isEdible(Supplier<LocalDate> now) {
-        return isFresh(now) &&
+        return isFresh(now) && 
                 isApprovedForConsumption() &&
                 hasBeenInspected();
     }
