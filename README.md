@@ -17,7 +17,7 @@ You probably had to troubleshoot and refactor a piece of code that you still hav
 You might have been stuck in a team when you never have time to improve your code base
 because `"We have to deliver more features"`.
 
-Heck, you probably still are.
+Heck, you probably still are.   
 
 We feel you, and in the spirit of Christmas, you deserve a gift.
 
